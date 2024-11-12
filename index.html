@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plant Moisture Status</title>
+  <title>Soil Moisture Status</title>
   <style>
     body {
       background-color: green;
-      text-align: center;
       color: magenta;
+      text-align: center;
     }
     h1 {
       color: blue;
       font-weight: bold;
       text-transform: uppercase;
     }
-    img {
+    #plantStatusImage {
       width: 300px;
       height: auto;
       margin-top: 20px;
@@ -23,41 +23,40 @@
   </style>
 </head>
 <body>
-  <h1>Plant Moisture Status</h1>
-  <p id="moisture-level">Soil Moisture Level: </p>
-  <p id="plant-status">Plant Status: </p>
-  <img id="plant-image" src="" alt="Plant Status Image">
+  <h1>Soil Moisture Status</h1>
+  <p id="moistureLevel">Soil Moisture: Loading...</p>
+  <p id="plantStatus">Plant Status: Loading...</p>
+  <img id="plantStatusImage" src="" alt="Plant Status Image">
 
   <script>
-    const THINGSPEAK_READ_API_KEY = '4VSQVVKXRVY711XW';
-    const CHANNEL_ID = '2741111';
-    const THIRSTY_PLANT_IMAGE = 'https://drive.google.com/uc?export=view&id=1RQPQE92_Qc7tyKNIWigMO847uyX_kWqk';
-    const SATIATED_PLANT_IMAGE = 'https://drive.google.com/uc?export=view&id=1l84iQ0wykb-MF_h-raQKITr50hUwJd9e';
+    // API URL for ThingSpeak (replace with your Channel ID and API Key)
+    const apiURL = 'https://api.thingspeak.com/channels/YOUR_CHANNEL_ID/feeds.json?api_key=YOUR_READ_API_KEY';
 
+    // Function to fetch data from ThingSpeak
     function fetchData() {
-      const url = https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/1.json?api_key=${THINGSPEAK_READ_API_KEY}&results=1;
-
-      fetch(url)
+      fetch(apiURL)
         .then(response => response.json())
         .then(data => {
-          const soilMoistureValue = data.feeds[0].field1;
-          const plantStatus = data.feeds[0].field2;
+          const moistureValue = data.feeds[0].field1;  // Get the soil moisture value from Field 1
+          const statusMessage = moistureValue > 600 ? "The plants are thirsty!" : "The plants are satiated!";
           
-          // Update moisture level on the page
-          document.getElementById('moisture-level').innerHTML = Soil Moisture Level: ${soilMoistureValue};
-          
-          // Update the plant status
-          document.getElementById('plant-status').innerHTML = plantStatus;
+          // Update the webpage with the fetched data
+          document.getElementById('moistureLevel').textContent = Soil Moisture: ${moistureValue};
+          document.getElementById('plantStatus').textContent = Plant Status: ${statusMessage};
 
-          // Display corresponding plant image
-          const plantImage = (soilMoistureValue > 600) ? THIRSTY_PLANT_IMAGE : SATIATED_PLANT_IMAGE;
-          document.getElementById('plant-image').src = plantImage;
+          // Display an image based on the plant's status
+          const plantImage = moistureValue > 600 ? 'https://link_to_thirsty_plant_image.jpg' : 'https://link_to_satiated_plant_image.jpg';
+          document.getElementById('plantStatusImage').src = plantImage;
         })
-        .catch(error => console.log('Error fetching data: ', error));
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          document.getElementById('moistureLevel').textContent = "Error fetching data.";
+        });
     }
 
-    setInterval(fetchData, 15000);  // Fetch data from ThingSpeak every 15 seconds
-    fetchData();  // Initial fetch
+    // Fetch data every 15 seconds
+    setInterval(fetchData, 15000);
+    fetchData();  // Initial data fetch when the page loads
   </script>
 </body>
 </html>
