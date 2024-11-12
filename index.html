@@ -1,67 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soil Moisture Monitor</title>
-    <style>
-        body {
-            background-color: green;
-            color: magenta;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            color: blue;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .status {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-        img {
-            width: 200px;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Moisture Status</title>
+  <style>
+    body {
+      background-color: green;
+      text-align: center;
+      color: magenta;
+    }
+    h1 {
+      color: blue;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    img {
+      width: 300px;
+      height: auto;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
+  <h1>Plant Moisture Status</h1>
+  <p id="moisture-level">Soil Moisture Level: </p>
+  <p id="plant-status">Plant Status: </p>
+  <img id="plant-image" src="" alt="Plant Status Image">
 
-    <h1>Soil Moisture Monitor</h1>
-    <div class="status">
-        <p id="moisture-level">Soil Moisture Level: Loading...</p>
-        <p id="moisture-status">Soil Status: Loading...</p>
-    </div>
+  <script>
+    const THINGSPEAK_READ_API_KEY = '4VSQVVKXRVY711XW';
+    const CHANNEL_ID = '2741111';
+    const THIRSTY_PLANT_IMAGE = 'https://drive.google.com/uc?export=view&id=1RQPQE92_Qc7tyKNIWigMO847uyX_kWqk';
+    const SATIATED_PLANT_IMAGE = 'https://drive.google.com/uc?export=view&id=1l84iQ0wykb-MF_h-raQKITr50hUwJd9e';
 
-    <!-- Placeholders for plant images -->
-    <img id="plant-image" src="" alt="Plant Status">
+    function fetchData() {
+      const url = https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/1.json?api_key=${THINGSPEAK_READ_API_KEY}&results=1;
 
-    <script>
-        // Replace these URLs with your Google Drive direct image links
-        const THIRSTY_PLANT_IMAGE = "https://drive.google.com/uc?export=view&id=1RQPQE92_Qc7tyKNIWigMO847uyX_kWqk";
-        const SATIATED_PLANT_IMAGE = "https://drive.google.com/uc?export=view&id=1l84iQ0wykb-MF_h-raQKITr50hUwJd9e";
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const soilMoistureValue = data.feeds[0].field1;
+          const plantStatus = data.feeds[0].field2;
+          
+          // Update moisture level on the page
+          document.getElementById('moisture-level').innerHTML = Soil Moisture Level: ${soilMoistureValue};
+          
+          // Update the plant status
+          document.getElementById('plant-status').innerHTML = plantStatus;
 
-        // Function to fetch data from ThingSpeak (or your server)
-        function fetchMoistureData() {
-            fetch("https://api.thingspeak.com/channels/2741111/fields/1/last.json?api_key=4VSQVVKXRVY711XW")
-                .then(response => response.json())
-                .then(data => {
-                    const moistureLevel = data.field1;
-                    const isDry = moistureLevel > 600; // Adjust threshold as needed
-                    
-                    document.getElementById("moisture-level").innerText = Soil Moisture Level: ${moistureLevel};
-                    document.getElementById("moisture-status").innerText = isDry ? "The plants are thirsty! Soil is dry." : "The plants are satiated! Soil is moist.";
-                    document.getElementById("plant-image").src = isDry ? THIRSTY_PLANT_IMAGE : SATIATED_PLANT_IMAGE;
-                })
-                .catch(error => {
-                    document.getElementById("moisture-level").innerText = "Error loading data.";
-                    document.getElementById("moisture-status").innerText = "Please check connection or ThingSpeak settings.";
-                });
-        }
+          // Display corresponding plant image
+          const plantImage = (soilMoistureValue > 600) ? THIRSTY_PLANT_IMAGE : SATIATED_PLANT_IMAGE;
+          document.getElementById('plant-image').src = plantImage;
+        })
+        .catch(error => console.log('Error fetching data: ', error));
+    }
 
-        // Update data every 15 seconds
-        setInterval(fetchMoistureData, 15000);
-    </script>
+    setInterval(fetchData, 15000);  // Fetch data from ThingSpeak every 15 seconds
+    fetchData();  // Initial fetch
+  </script>
 </body>
 </html>
