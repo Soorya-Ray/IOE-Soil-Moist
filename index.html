@@ -30,7 +30,7 @@
 
   <script>
     // API URL for ThingSpeak (replace with your Channel ID and API Key)
-    const apiURL = 'https://api.thingspeak.com/channels/YOUR_CHANNEL_ID/feeds.json?api_key=YOUR_READ_API_KEY';
+    const apiURL = 'https://api.thingspeak.com/channels/2741111/feeds.json?api_key=4VSQVVKXRVY711XW';
 
     // Function to fetch data from ThingSpeak
     function fetchData() {
@@ -45,7 +45,7 @@
           document.getElementById('plantStatus').textContent = Plant Status: ${statusMessage};
 
           // Display an image based on the plant's status
-          const plantImage = moistureValue > 600 ? 'https://link_to_thirsty_plant_image.jpg' : 'https://link_to_satiated_plant_image.jpg';
+          const plantImage = moistureValue > 600 ? 'https://drive.google.com/uc?export=view&id=1RQPQE92_Qc7tyKNIWigMO847uyX_kWqk' : 'https://drive.google.com/uc?export=view&id=1l84iQ0wykb-MF_h-raQKITr50hUwJd9e';
           document.getElementById('plantStatusImage').src = plantImage;
         })
         .catch(error => {
